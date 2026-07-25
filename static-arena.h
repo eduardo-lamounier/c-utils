@@ -58,6 +58,17 @@ void st_arena_reset(static_arena_t *arena);
 // Also returns NULL if either 'n' or 'size' are zero.
 void *st_arena_alloc(static_arena_t *arena, size_t n, size_t size);
 
+// Returns the amount of allocated bytes for this arena on its creation.
+size_t st_arena_capacity(static_arena_t *arena);
+
+// Returns the amount of bytes available for allocation in the arena.
+//
+// If it's less than the amount of memory you wish to allocate, then that means
+// an allocation of that specific amount (or greater) would fail returning
+// NULL. You can reset the arena via 'st_arena_reset' if you are sure anything
+// once allocated in it is no longer needed.
+size_t st_arena_available(static_arena_t *arena);
+
 #endif
 
 #ifdef STATIC_ARENA_IMPLEMENTATION
@@ -150,6 +161,12 @@ void *st_arena_alloc(static_arena_t *arena, size_t n, size_t size) {
   void *addr = arena->data + arena->offset;
   arena->offset += n * size;
   return addr;
+}
+
+size_t st_arena_capacity(static_arena_t *arena) { return arena->capacity; }
+
+size_t st_arena_available(static_arena_t *arena) {
+  return arena->capacity - aligned_offset(arena->offset);
 }
 
 #endif
