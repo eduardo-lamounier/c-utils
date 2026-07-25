@@ -1,7 +1,7 @@
 /* @author: eduardo-lamounier
  * @date: 25/07/2026 [DD/MM/YYYY]
  *
- * A header-only file containing the implementation of fixed-size memory
+ * A header-only library containing the implementation of fixed-size memory
  * arenas. 
  *
  * To use it, put this before including the file:
