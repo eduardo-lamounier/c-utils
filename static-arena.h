@@ -36,7 +36,11 @@ static_arena_t *st_arena_new(size_t capacity);
 
 // Releases all resources from an arena, freeing everything that was allocated
 // in it.
-void st_arena_destroy(static_arena_t *arena);
+//
+// Receives a pointer to the arena's pointer (aka arena's pointer is passed by
+// reference), making the pointer to the arena NULL - as the arena is now
+// unavailable.
+void st_arena_destroy(static_arena_t **arena);
 
 // Doesn't destroy the arena, instead, ignores everything once allocated in it
 // and acts like a brand-new empty arena with the same capacity. Still needs to
@@ -119,10 +123,11 @@ static_arena_t *st_arena_new(size_t capacity) {
   return arena;
 }
 
-void st_arena_destroy(static_arena_t *arena) {
-  assert(arena != NULL);
-  free(arena->data);
-  return_arena(arena);
+void st_arena_destroy(static_arena_t **arena) {
+  assert(arena != NULL && *arena != NULL);
+  free((*arena)->data);
+  return_arena(*arena);
+  *arena = NULL;
 }
 
 void st_arena_reset(static_arena_t *arena) {
