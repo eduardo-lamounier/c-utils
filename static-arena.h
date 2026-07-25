@@ -59,6 +59,7 @@ void *st_arena_alloc(static_arena_t *arena, size_t n, size_t size);
 #ifdef STATIC_ARENA_IMPLEMENTATION
 
 #include<assert.h>
+#include<stdint.h>
 
 struct arena {
   char *data;
@@ -89,14 +90,10 @@ inline static static_arena_t *borrow_arena(void) {
 // Tells the object pool to mark the position of the returned arena as free.
 inline static void return_arena(static_arena_t *arena) {
   assert(arena != NULL);
-  pool_obj_t *pool_obj = (pool_obj_t*)((bool*)arena - 1);
-  // [     pool_obj_t     ]
-  // [bool][static_arena_t]
-  //       ^ 'arena'
-  // ^ 'pool_obj'
+  size_t i = (uintptr_t)arena - (uintptr_t)object_pool;
 
-  assert(pool_obj->used);
-  pool_obj->used = false;
+  assert(object_pool[i].used);
+  object_pool[i].used = false;
 }
 
 // ============================================================================
