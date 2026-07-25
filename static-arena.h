@@ -65,6 +65,8 @@ void *st_arena_alloc(static_arena_t *arena, size_t n, size_t size);
 #include<assert.h>
 #include<stdint.h>
 
+#define MEMORY_ALIGNMENT 8
+
 struct arena {
   char *data;
   size_t capacity;
@@ -100,7 +102,9 @@ inline static void return_arena(static_arena_t *arena) {
   object_pool[i].used = false;
 }
 
-// ============================================================================
+inline static size_t aligned_offset(size_t offset) {
+  return (offset + MEMORY_ALIGNMENT-1) & ~(MEMORY_ALIGNMENT-1);
+}
 
 static_arena_t *st_arena_new(size_t capacity) {
   if(capacity == 0)
@@ -138,7 +142,7 @@ void st_arena_reset(static_arena_t *arena) {
 void *st_arena_alloc(static_arena_t *arena, size_t n, size_t size) {
   assert(arena != NULL);
   assert(n != 0 && size != 0);
-  arena->offset = (arena->offset + 8-1) & ~(8-1);
+  arena->offset = aligned_offset(arena->offset);
   
   if(arena->offset + n * size >= arena->capacity)
     return NULL;
