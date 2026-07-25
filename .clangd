@@ -1,6 +1,7 @@
 CompileFlags:
   Add: [
     -DSTATIC_ARENA_IMPLEMENTATION,
+    -DSTRING_VIEW_IMPLEMENTATION,
   ]
 
 Diagnostics:
