@@ -13,8 +13,8 @@
 #include<stdio.h>
 #include<stdbool.h>
 
-#define strview_FMT "%.*s"
-#define strview_ARGS(v) (int)(v).length, (v).data
+#define str_view_FMT "%.*s"
+#define str_view_ARG(v) (int)(v).length, (v).data
 
 typedef struct {
   const char *data;
