@@ -11,9 +11,10 @@
 #define STRING_VIEW_H
 
 #include<stdio.h>
+#include<stdbool.h>
 
 #define strview_FMT "%.*s"
-#define strview_ARGS(v) (v).length, (v).data
+#define strview_ARGS(v) (int)(v).length, (v).data
 
 typedef struct {
   const char *data;
@@ -24,10 +25,10 @@ typedef struct {
 #define str_view_empty() str_view_from("")
 
 // Trims spaces from left and right of the view
-#define str_view_trim(v) {                                                     \
+#define str_view_trim(v) do {                                                  \
   str_view_trim_left(v);                                                       \
   str_view_trim_right(v);                                                      \
-}
+} while(0)
 
 // Creates a string view to the start of a string up to a specified amount of
 // characters.
@@ -40,11 +41,32 @@ string_view_t str_view_new(const char *str, size_t n);
 // All changes in the original string reflect on the view.
 string_view_t str_view_from(const char *cstr);
 
+// Returns a string view to a section of the specified input view. Goes from
+// 'left' (inclusive) to right (exclusive).
 string_view_t str_view_slice(string_view_t view, size_t left, size_t right);
 
+// Removes all spaces to the left of a string view, not from the original string
+// but only the view.
 void str_view_trim_left(string_view_t *view);
 
+// Removes all spaces to the right of a string view, not from the original string
+// but only the view.
 void str_view_trim_right(string_view_t *view);
+
+// Converts the content of a string view to an integer.
+//
+// If the string is invalid (e.g. "hello"), 0 is returned.
+int str_view_toint(string_view_t view);
+
+// Converts the content of a string view to a double.
+//
+// If the string is invalid (e.g. "hello"), 0.0 is returned.
+double str_view_todouble(string_view_t view);
+
+// Checks whether the content of two string views are the same - in this case
+// returning `true`, otherwise `false`.
+bool str_view_equals(string_view_t view1, string_view_t view2);
+
 
 #endif
 
@@ -53,6 +75,7 @@ void str_view_trim_right(string_view_t *view);
 
 #include<assert.h>
 #include<string.h>
+#include<stdlib.h>
 
 inline static void chop_left(string_view_t *view, size_t n) {
   assert(view != NULL && n <= view->length && view->data != NULL);
@@ -111,5 +134,35 @@ void str_view_trim_right(string_view_t *view) {
       i--, count++);
   chop_right(view, count);
 }
+
+int str_view_toint(string_view_t view) {
+  if(view.data == NULL || view.length == 0)
+    return 0;
+
+  char temp[view.length+1];
+  memcpy(temp, view.data, view.length);
+  temp[view.length] = '\0';
+
+  return atoi(temp);
+}
+
+double str_view_todouble(string_view_t view) {
+  if(view.data == NULL || view.length == 0)
+    return 0.0;
+
+  char temp[view.length+1];
+  memcpy(temp, view.data, view.length);
+  temp[view.length] = '\0';
+
+  return atof(temp);
+}
+
+bool str_view_equals(string_view_t view1, string_view_t view2) {
+  if(view1.length != view2.length)
+    return false;
+
+  return strncmp(view1.data, view2.data, view1.length) == 0;
+}
+
 
 #endif
