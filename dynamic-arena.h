@@ -1,5 +1,5 @@
 /* @author: eduardo-lamounier
- * @date: 25/07/2026 [DD/MM/YYYY]
+ * @date: 28/07/2026 [DD/MM/YYYY]
  *
  * A header-only library containing the implementation of memory arenas that
  * grow dynamically.
