@@ -107,11 +107,12 @@ void dy_arena_destroy(dynamic_arena_t **arena) {
 
   dynamic_arena_t **current = arena;
   while(current != NULL) {
-    free((*arena)->data);
-    free(*arena);
-    *arena = NULL;
+    dynamic_arena_t **next_arena = &(*current)->next_arena;
+    free((*current)->data);
+    free(*current);
+    *current = NULL;
 
-    current = &(*current)->next_arena;
+    current = next_arena;
   }
 }
 
