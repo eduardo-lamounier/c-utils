@@ -131,7 +131,7 @@ static_arena_t *st_arena_new(size_t capacity) {
   arena->data = (char*)calloc(capacity, 1);
 
   if(arena->data == NULL) {
-    free(arena);
+    return_arena(arena);
     return NULL;
   }
 
