@@ -1,2 +1,2 @@
 # c-utils
-Repository containing header files for C programming.
+Repository containing single-header stb-style libraries for C programming.
