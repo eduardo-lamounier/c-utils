@@ -105,15 +105,15 @@ dynamic_arena_t *dy_arena_new(size_t capacity) {
 void dy_arena_destroy(dynamic_arena_t **arena) {
   assert(arena != NULL && *arena != NULL);
 
-  dynamic_arena_t **current = arena;
+  dynamic_arena_t *current = *arena;
   while(current != NULL) {
-    dynamic_arena_t **next_arena = &(*current)->next_arena;
-    free((*current)->data);
-    free(*current);
-    *current = NULL;
+    dynamic_arena_t *next_arena = current->next_arena;
+    free(current->data);
+    free(current);
 
     current = next_arena;
   }
+  *arena = NULL;
 }
 
 void dy_arena_reset(dynamic_arena_t *arena) {
