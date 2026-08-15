@@ -69,6 +69,9 @@ size_t dy_arena_capacity(dynamic_arena_t *arena);
 
 #define MEMORY_ALIGNMENT 8
 
+#define MAX(a, b) ( (a) > (b) ? (a) : (b) )
+#define MIN(a, b) ( (a) < (b) ? (a) : (b) )
+
 struct arena {
   struct arena *next_arena;
   char *data;
@@ -141,7 +144,7 @@ void *dy_arena_alloc(dynamic_arena_t *arena, size_t n, size_t size) {
   }
 
   if(current == NULL)
-    current = dy_arena_new(arena->capacity);
+    current = dy_arena_new(MAX(arena->capacity, n * size));
 
   if(current == NULL)
     return NULL;
