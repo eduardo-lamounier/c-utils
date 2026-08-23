@@ -74,6 +74,7 @@ size_t st_arena_available(static_arena_t *arena);
 #ifdef STATIC_ARENA_IMPLEMENTATION
 
 #include<assert.h>
+#include<stdbool.h>
 #include<stdint.h>
 
 #define MEMORY_ALIGNMENT 8
