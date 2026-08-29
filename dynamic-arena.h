@@ -11,6 +11,7 @@
 #ifndef DYNAMIC_ARENA_H
 #define DYNAMIC_ARENA_H
 
+#include<string.h>
 #include<stdlib.h>
 
 #define KB(x) (   (x) * (size_t)1024 )
@@ -56,6 +57,13 @@ void dy_arena_reset(dynamic_arena_t *arena);
 // Also keep in mind that the pointer returned becomes invalid after reseting
 // or destroying the arena.
 void *dy_arena_alloc(dynamic_arena_t *arena, size_t n, size_t size);
+
+// Similarly to 'dy_arena_alloc', allocates a block of memory in the arena.
+//
+// If possible to allocate the arena, copies the bytes of the source, otherwise,
+// returns NULL as normal.
+void *dy_arena_alloc_copy(dynamic_arena_t *arena, size_t size,
+                          const void *source, size_t source_size);
 
 // Returns the total amount of allocated bytes by this arena in its lifetime.
 size_t dy_arena_capacity(dynamic_arena_t *arena);
@@ -151,6 +159,17 @@ void *dy_arena_alloc(dynamic_arena_t *arena, size_t n, size_t size) {
 
   void *addr = current->data + current->offset;
   current->offset += n * size;
+  return addr;
+}
+
+void *dy_arena_alloc_copy(dynamic_arena_t *arena, size_t size,
+                     const void *source, size_t source_size) {
+  void *addr = dy_arena_alloc(arena, 1, size);
+
+  if(addr == NULL)
+    return NULL;
+
+  memmove(addr, source, MIN(size, source_size));
   return addr;
 }
 
