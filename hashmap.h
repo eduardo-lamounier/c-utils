@@ -37,12 +37,31 @@ hashmap_t *hashmap_new(void);
 // The pointer to the hashmap becomes invalid.
 void hashmap_destroy(hashmap_t *map);
 
+// Puts a new entry to the hashmap.
+//
+// Returns whether it was possible to add the new entry. The operation
+// can fail if rehashing fails consecutivelly to allocate new space in
+// memory, making the hash table full in a certain point.
+//
+// If the entry's key is already associated to a value, then the value is just
+// updated for the specified entry's value.
+//
+// The pointer to the entry's key and value MUST be valid as long as the
+// hashmap is alive.
 bool hashmap_put(hashmap_t *map, map_entry_t entry);
 
+// Removes the entry associated to the specified key from the hash table.
+//
+// If no entry is associated to the specified key, returns `false`. Otherwise,
+// returns `true`.
 bool hashmap_remove(hashmap_t *map, const char *key, uint64_t key_length);
 
+// Returns whether there's an entry associated to the specified key in the hash
+// table.
 bool hashmap_contains(hashmap_t *map, const char *key, uint64_t key_length);
 
+// Gets the value associated with a specified key. Returns `NULL` if the key
+// isn't associated with any entry.
 void *hashmap_get(hashmap_t *map, const char *key, uint64_t key_length);
 
 #endif
