@@ -95,11 +95,6 @@ map_entry_t *hashmap_get_entry(hashmap_t *map, const char *key, uint64_t key_len
 #define FNV_OFFSET_BASIS 0xcbf29ce484222325
 #define FNV_PRIME        0x00000100000001b3
 
-#define min(a, b) ((a) > (b) ? (b) : (a))
-#define max(a, b) ((a) > (b) ? (a) : (b))
-
-#define unreachable() assert(false)
-
 struct hashmap {
   map_entry_t *entries;
   bool *tombstones;
@@ -305,5 +300,13 @@ map_entry_t *hashmap_get_entry(hashmap_t *map, const char *key, uint64_t key_len
 
   return NULL;
 }
+
+#undef STARTING_CAPACITY
+
+#undef HIGH_LOAD_FACTOR
+#undef LOW_LOAD_FACTOR
+
+#undef FNV_OFFSET_BASIS
+#undef FNV_PRIME
 
 #endif
