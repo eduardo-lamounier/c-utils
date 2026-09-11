@@ -62,7 +62,20 @@ bool hashmap_contains(hashmap_t *map, const char *key, uint64_t key_length);
 
 // Gets the value associated with a specified key. Returns `NULL` if the key
 // isn't associated with any entry.
+//
+// If your data can be `NULL` and you are not sure whether a value was
+// associated with the specified key, you should:
+//   1 - Use `hashmap_contains(...)` to verify whether the key is in the
+//   hashmap - if so, this function will only return `NULL` for the key if the
+//   value itself is `NULL`;
+//   2 - Use `hashmap_get_entry(...)`, which will return `NULL` if the key 
+//   isn't in the hashmap or a valid reference to the entry - which will have
+//   the real value associated to the key.
 void *hashmap_get(hashmap_t *map, const char *key, uint64_t key_length);
+
+// Gets a reference to the entry associated with a specified key. Returns
+// 'NULL' if the key isn't associated with any entry.
+map_entry_t *hashmap_get_entry(hashmap_t *map, const char *key, uint64_t key_length);
 
 #endif
 
@@ -265,6 +278,12 @@ bool hashmap_contains(hashmap_t *map, const char *key, uint64_t key_length) {
 }
 
 void *hashmap_get(hashmap_t *map, const char *key, uint64_t key_length) {
+  map_entry_t *entry = hashmap_get_entry(map, key, key_length); 
+
+  return entry != NULL ? entry->value : NULL;
+}
+
+map_entry_t *hashmap_get_entry(hashmap_t *map, const char *key, uint64_t key_length) {
   assert(map != NULL && key != NULL);
 
   uint64_t begin_idx = hashf(key, key_length) % map->capacity;
@@ -280,7 +299,7 @@ void *hashmap_get(hashmap_t *map, const char *key, uint64_t key_length) {
        eq_keys(map->entries[idx].key, key,
                map->entries[idx].key_length, key_length)
     ) {
-      return map->entries[idx].value;   
+      return map->entries + idx;   
     }
   }
 
