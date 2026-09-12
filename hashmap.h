@@ -37,6 +37,20 @@ hashmap_t *hashmap_new(void);
 // The pointer to the hashmap becomes invalid.
 void hashmap_destroy(hashmap_t *map);
 
+// Puts a new (key, value) pair to the hashmap.
+//
+// Returns whether it was possible to add the new entry. The operation
+// can fail if rehashing fails consecutivelly to allocate new space in
+// memory, making the hash table full in a certain point.
+//
+// If the key is already associated to a value, then the value is just
+// updated for the specified one.
+//
+// The pointer to the key and value MUST be valid as long as the
+// hashmap is alive.
+bool hashmap_put(hashmap_t *map, const char *key, uint64_t key_length,
+                 void *value);
+
 // Puts a new entry to the hashmap.
 //
 // Returns whether it was possible to add the new entry. The operation
@@ -48,7 +62,7 @@ void hashmap_destroy(hashmap_t *map);
 //
 // The pointer to the entry's key and value MUST be valid as long as the
 // hashmap is alive.
-bool hashmap_put(hashmap_t *map, map_entry_t entry);
+bool hashmap_put_entry(hashmap_t *map, map_entry_t entry);
 
 // Removes the entry associated to the specified key from the hash table.
 //
@@ -132,7 +146,7 @@ void try_to_rehash(hashmap_t *map) {
 
   for(uint64_t i = 0; i < map->capacity; i++) {
     if(map->entries[i].key != NULL && !map->tombstones[i]) {
-      hashmap_put(&new_map, map->entries[i]);
+      hashmap_put_entry(&new_map, map->entries[i]);
     }
   }
 
@@ -196,7 +210,16 @@ void hashmap_destroy(hashmap_t *map) {
   free(map);
 }
 
-bool hashmap_put(hashmap_t *map, map_entry_t entry) {
+bool hashmap_put(hashmap_t *map, const char *key, uint64_t key_length,
+                 void *value) {
+  return hashmap_put_entry(map, (map_entry_t) {
+    key,
+    key_length,
+    value
+  });
+}
+
+bool hashmap_put_entry(hashmap_t *map, map_entry_t entry) {
   assert(map != NULL);
 
   if((double)map->used / map->capacity > HIGH_LOAD_FACTOR) { 
